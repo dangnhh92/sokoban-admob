@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sokoban 1000 Levels – Mobile Puzzle Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sokoban 1000 Levels – a handcrafted puzzle game for mobile. Simple rules, deep challenge, no distractions." />
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #0b1120;
+      --accent: #f97316;
+      --accent-soft: #fed7aa;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px 40px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 18px 18px;
+      border: 1px solid var(--border);
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        padding: 24px 22px 20px;
+      }
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    h1 {
+      font-size: clamp(24px, 4vw, 30px);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .subtitle .highlight {
+      color: var(--accent-soft);
+      font-weight: 500;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #111827;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: #020617;
+    }
+
+    .meta {
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--border);
+    }
+
+    .features {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 4px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (min-width: 768px) {
+      .features {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+    }
+
+    .feature-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .feature strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Mobile puzzle game · Sokoban 1000 Levels</span>
+      </div>
+
+      <h1>Sokoban 1000 Levels</h1>
+      <p class="subtitle">
+        A clean, handcrafted Sokoban experience with
+        <span class="highlight">1000 carefully curated stages</span>.
+        No timers, no pay-to-win, no distractions – just pure box-pushing puzzles.
+      </p>
+
+      <div class="badges">
+        <span class="badge">1000 handcrafted levels</span>
+        <span class="badge">Classic Sokoban rules</span>
+        <span class="badge">Play offline</span>
+        <span class="badge">Designed for one-hand play</span>
+      </div>
+
+      <div class="buttons">
+        <a
+          class="btn btn-primary"
+          href="https://play.google.com/store/apps/details?id=com.dangnhh.sokoban"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Get it on Google Play</span>
+        </a>
+        <a
+          class="btn btn-ghost"
+          href="https://www.youtube.com/shorts/rEPaKehZn1c"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Watch gameplay</span>
+        </a>
+      </div>
+
+      <div class="meta">
+        <span><span class="dot"></span> Free to play</span>
+        <span><span class="dot"></span> Light on battery &amp; storage</span>
+        <span><span class="dot"></span> No account required</span>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-title">Puzzle design</div>
+          <div>
+            <strong>Levels ordered by difficulty</strong> so new players can learn
+            step by step, while veterans still get brutal late-game challenges.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Focused gameplay</div>
+          <div>
+            <strong>Minimal UI</strong>, simple controls, no flashy effects.
+            The only goal: push every box onto its target with the fewest moves you can.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">
+      © <span id="year"></span> Sokoban 1000 Levels – solo-developed puzzle game.
+    </p>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
