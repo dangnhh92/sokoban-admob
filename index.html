@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <title>Sokoban 1000 Levels – Mobile Puzzle Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Sokoban 1000 Levels – a handcrafted puzzle game for mobile. Simple rules, deep challenge, no distractions." />
+  <meta
+    name="description"
+    content="Sokoban 1000 Levels – a handcrafted mobile puzzle game with 1000 stages, Classic and Time Challenge modes, leaderboards, offline play, and no pay-to-win."
+  />
   <style>
     :root {
       --bg: #020617;
@@ -204,6 +207,16 @@
       color: var(--muted);
       text-align: center;
     }
+
+    .footer a {
+      color: var(--muted);
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+
+    .footer a:hover {
+      color: var(--accent-soft);
+    }
   </style>
 </head>
 <body>
@@ -216,16 +229,22 @@
 
       <h1>Sokoban 1000 Levels</h1>
       <p class="subtitle">
-        A clean, handcrafted Sokoban experience with
-        <span class="highlight">1000 carefully curated stages</span>.
-        No timers, no pay-to-win, no distractions – just pure box-pushing puzzles.
+        A focused, handcrafted Sokoban for mobile with
+        <span class="highlight">1000 carefully ordered levels</span>, from gentle intros to
+        brutal late-game challenges. Classic mode lets you clear stage by stage,
+        while Time Challenge throws random puzzles at you with a global leaderboard
+        and a soft background soundtrack. No timers, no pay-to-win, just pure
+        box-pushing strategy.
       </p>
 
       <div class="badges">
         <span class="badge">1000 handcrafted levels</span>
-        <span class="badge">Classic Sokoban rules</span>
-        <span class="badge">Play offline</span>
-        <span class="badge">Designed for one-hand play</span>
+        <span class="badge">Classic &amp; Time Challenge modes</span>
+        <span class="badge">Global leaderboard</span>
+        <span class="badge">Offline play</span>
+        <span class="badge">No pay-to-win, no energy</span>
+        <span class="badge">Android &amp; iOS</span>
+        <span class="badge">Solo-developed</span>
       </div>
 
       <div class="buttons">
@@ -236,6 +255,14 @@
           rel="noopener noreferrer"
         >
           <span>Get it on Google Play</span>
+        </a>
+        <a
+          class="btn btn-primary"
+          href="https://apps.apple.com/us/app/sokoban-1000-levels-puzzle/id6756060875"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Download on the App Store</span>
         </a>
         <a
           class="btn btn-ghost"
@@ -249,23 +276,48 @@
 
       <div class="meta">
         <span><span class="dot"></span> Free to play</span>
-        <span><span class="dot"></span> Light on battery &amp; storage</span>
+        <span><span class="dot"></span> Optional ads, no paywalls</span>
         <span><span class="dot"></span> No account required</span>
+        <span><span class="dot"></span> Light on battery &amp; storage</span>
       </div>
 
       <div class="features">
         <div class="feature">
           <div class="feature-title">Puzzle design</div>
           <div>
-            <strong>Levels ordered by difficulty</strong> so new players can learn
-            step by step, while veterans still get brutal late-game challenges.
+            <strong>All levels are handcrafted and ordered by difficulty</strong>,
+            so new players can learn step by step. Early stages teach the basics,
+            mid-game mixes in tighter layouts and traps, and late-game levels are
+            designed to punish lazy thinking and reward careful planning.
           </div>
         </div>
         <div class="feature">
-          <div class="feature-title">Focused gameplay</div>
+          <div class="feature-title">Game modes</div>
           <div>
-            <strong>Minimal UI</strong>, simple controls, no flashy effects.
-            The only goal: push every box onto its target with the fewest moves you can.
+            <strong>Classic mode</strong> lets you work through all 1000 levels at
+            your own pace, with unlimited undo and restart. In
+            <strong>Time Challenge</strong>, you get a random sequence of puzzles
+            and race to clear as many as you can before you slip up, competing on a
+            <strong>global leaderboard</strong>.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Focused experience</div>
+          <div>
+            <strong>Minimal UI, one-hand controls</strong>, and a calm background
+            track keep all attention on the puzzle itself. No pop-up spam, no
+            forced sign-ins, and no daily grind systems—just a clean Sokoban
+            experience you can pick up and put down anytime.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Built by one person</div>
+          <div>
+            Sokoban 1000 Levels is <strong>solo-developed over months</strong>:
+            every layout, difficulty curve, and update is done by a single dev
+            obsessed with box-pushing puzzles. Future updates will continue to
+            refine level balance, add quality-of-life tweaks, and expand modes
+            without compromising the core design.
           </div>
         </div>
       </div>
@@ -273,6 +325,14 @@
 
     <p class="footer">
       © <span id="year"></span> Sokoban 1000 Levels – solo-developed puzzle game.
+      ·
+      <a
+        href="https://dangnhh92.github.io/sokoban-policy/privacy.html"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Privacy Policy
+      </a>
     </p>
   </main>
 
