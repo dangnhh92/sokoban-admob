@@ -2,342 +2,517 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sokoban 1000 Levels – Mobile Puzzle Game</title>
+  <title>Sokoban 1000 Levels — A handcrafted box-pushing puzzle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta
-    name="description"
-    content="Sokoban 1000 Levels – a handcrafted mobile puzzle game with 1000 stages, Classic and Time Challenge modes, leaderboards, offline play, and no pay-to-win."
-  />
+  <meta name="description" content="1000 handcrafted Sokoban levels for iOS and Android. Classic mode, Time Challenge, global leaderboard. No pay-to-win. Solo-developed." />
+  <meta name="theme-color" content="#2a1d12" />
+
+  <meta property="og:title" content="Sokoban 1000 Levels" />
+  <meta property="og:description" content="1000 handcrafted Sokoban levels. No energy. No paywalls. Solo-developed." />
+  <meta property="og:image" content="landing-assets/icon.png" />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" type="image/png" href="landing-assets/icon.png" />
+  <link rel="preload" as="image" href="landing-assets/bg.png" />
+  <link rel="preload" as="image" href="landing-assets/crate.png" />
+  <link rel="preload" as="image" href="landing-assets/player.png" />
+
   <style>
-    :root {
-      --bg: #020617;
-      --card-bg: #0b1120;
-      --accent: #f97316;
-      --accent-soft: #fed7aa;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border: #1f2937;
+    @font-face {
+      font-family: 'VCR';
+      src: url('landing-assets/VCR.ttf') format('truetype');
+      font-display: swap;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --wood:      oklch(0.32 0.055 55);
+      --wood-deep: oklch(0.22 0.045 52);
+      --wood-edge: oklch(0.16 0.035 50);
+      --cream:     oklch(0.95 0.025 82);
+      --cream-dim: oklch(0.82 0.030 72);
+      --muted:     oklch(0.66 0.035 65);
+      --accent:    oklch(0.74 0.155 55);
+      --accent-soft: oklch(0.82 0.12 65);
+      --goal:      oklch(0.62 0.115 232);
+
+      --cell: 44px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
+
+    @media (min-width: 900px) {
+      :root { --cell: 52px; }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--cream);
+      background: var(--wood-edge);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
       min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url('landing-assets/bg.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1200px 800px at 50% 0%, transparent 0%, oklch(0.12 0.03 50 / 0.55) 70%),
+        linear-gradient(180deg, oklch(0.12 0.03 50 / 0.10) 0%, oklch(0.12 0.03 50 / 0.45) 100%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 28px 22px 56px;
+    }
+
+    @media (min-width: 900px) {
+      .shell { padding: 44px 40px 72px; }
+    }
+
+    /* ─── Top ─── */
+
+    .topbar {
       display: flex;
-      justify-content: center;
-      padding: 32px 16px 40px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 56px;
     }
 
-    .page {
-      width: 100%;
-      max-width: 720px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'VCR', ui-monospace, monospace;
+      font-size: 22px;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+    }
+    .brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: block;
     }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px 18px 18px;
-      border: 1px solid var(--border);
+    .version {
+      font-family: 'VCR', ui-monospace, monospace;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
     }
 
-    @media (min-width: 768px) {
-      .card {
-        padding: 24px 22px 20px;
+    /* ─── Hero ─── */
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (min-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 72px;
       }
     }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 10px;
-    }
-
-    .pill-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-
     h1 {
-      font-size: clamp(24px, 4vw, 30px);
-      line-height: 1.2;
-      margin-bottom: 8px;
+      font-family: 'VCR', ui-monospace, monospace;
+      font-weight: 400;
+      font-size: clamp(56px, 9vw, 104px);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      margin: 0 0 20px;
+      color: var(--cream);
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
     }
 
-    .subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 14px;
+    .lede {
+      font-size: 17px;
+      max-width: 46ch;
+      color: var(--cream-dim);
+      margin: 0 0 32px;
     }
-
-    .subtitle .highlight {
-      color: var(--accent-soft);
+    .lede b {
+      color: var(--cream);
       font-weight: 500;
     }
 
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .badge {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .buttons {
+    .ctas {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 14px;
     }
 
-    .btn {
+    .cta {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 9px 16px;
-      border-radius: 999px;
+      gap: 10px;
+      padding: 13px 20px;
+      border-radius: 10px;
       font-size: 14px;
       font-weight: 500;
-      border: 1px solid transparent;
-      cursor: pointer;
       text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
+      border: 1px solid var(--accent);
       background: var(--accent);
-      color: #111827;
-      border-color: var(--accent);
+      color: var(--wood-edge);
+      transition: transform 180ms var(--ease), filter 180ms var(--ease);
+    }
+    .cta:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    .cta:active { transform: translateY(0); }
+
+    .cta.ghost {
+      background: oklch(0.22 0.04 52 / 0.5);
+      color: var(--cream);
+      border-color: oklch(0.50 0.04 60 / 0.6);
+      backdrop-filter: blur(4px);
+    }
+    .cta.ghost:hover { background: oklch(0.28 0.04 52 / 0.6); }
+
+    .cta svg {
+      width: 16px; height: 16px;
+      fill: currentColor;
     }
 
-    .btn-primary:hover {
-      filter: brightness(1.05);
+    /* ─── Board (actual in-game tiles) ─── */
+
+    .stage {
+      justify-self: center;
+      user-select: none;
     }
 
-    .btn-ghost {
-      background: transparent;
+    .board {
+      position: relative;
+      width: calc(var(--cell) * 6);
+      height: calc(var(--cell) * 5);
+      background: var(--wood-deep);
+      border-radius: 14px;
+      box-shadow:
+        0 1px 0 oklch(0.45 0.04 60 / 0.6) inset,
+        0 20px 40px -20px oklch(0.05 0.02 50 / 0.8),
+        0 6px 16px -6px oklch(0.05 0.02 50 / 0.6);
+      padding: 8px;
+    }
+
+    .board-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: oklch(0.20 0.03 48);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .cell {
+      position: absolute;
+      width: var(--cell);
+      height: var(--cell);
+      left: calc(var(--x) * var(--cell));
+      top:  calc(var(--y) * var(--cell));
+    }
+
+    .cell img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    .cell.crate { z-index: 2; animation: crate-move 7.5s var(--ease) infinite; }
+    .cell.player { z-index: 3; animation: player-walk 7.5s var(--ease) infinite; }
+    .cell.goal img { animation: goal-pulse 2.6s var(--ease) infinite; }
+
+    /* Player always stays one cell BEHIND the crate while pushing. */
+    @keyframes player-walk {
+      0%, 15%    { transform: translate(0, 0); }
+      32%        { transform: translate(var(--cell), 0); }
+      52%        { transform: translate(calc(var(--cell) * 2), 0); }
+      100%       { transform: translate(calc(var(--cell) * 2), 0); }
+    }
+
+    @keyframes crate-move {
+      0%, 15%    { transform: translate(0, 0); }
+      32%        { transform: translate(var(--cell), 0); }
+      52%        { transform: translate(calc(var(--cell) * 2), 0); opacity: 1; }
+      54%, 100%  { transform: translate(calc(var(--cell) * 2), 0); opacity: 0; }
+    }
+
+    .cell.crate-final {
+      z-index: 2;
+      opacity: 0;
+      animation: crate-final-appear 7.5s var(--ease) infinite;
+    }
+
+    @keyframes crate-final-appear {
+      0%, 53%    { opacity: 0; }
+      54%, 100%  { opacity: 1; }
+    }
+
+    @keyframes goal-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50%      { transform: scale(1.08); opacity: 1; }
+    }
+
+    .stage-caption {
+      margin-top: 18px;
+      text-align: center;
+      font-family: 'VCR', ui-monospace, monospace;
+      letter-spacing: 0.08em;
+      font-size: 16px;
       color: var(--muted);
-      border-color: var(--border);
+    }
+    .stage-caption b {
+      color: var(--accent-soft);
+      font-weight: 400;
     }
 
-    .btn-ghost:hover {
-      background: #020617;
+    @media (prefers-reduced-motion: reduce) {
+      .cell.crate, .cell.player, .cell.crate-final, .cell.goal img {
+        animation: none;
+      }
+      .cell.player { transform: translate(calc(var(--cell) * 2), 0); }
+      .cell.crate { opacity: 0; }
+      .cell.crate-final { opacity: 1; }
     }
 
-    .meta {
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    /* ─── Modes ─── */
 
-    .meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 999px;
-      background: var(--border);
-    }
-
-    .features {
-      border-top: 1px solid var(--border);
-      padding-top: 12px;
-      margin-top: 4px;
+    .modes {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+      margin-top: 96px;
+    }
+
+    @media (min-width: 900px) {
+      .modes { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+    }
+
+    .mode {
+      border: 1px solid oklch(0.42 0.04 55 / 0.5);
+      background: oklch(0.16 0.03 50 / 0.55);
+      backdrop-filter: blur(6px);
+      border-radius: 14px;
+      padding: 24px 22px;
+    }
+
+    .mode h3 {
+      font-family: 'VCR', ui-monospace, monospace;
+      font-weight: 400;
+      font-size: 28px;
+      letter-spacing: 0.04em;
+      margin: 0 0 4px;
+      color: var(--cream);
+    }
+    .mode h3 em { font-style: normal; color: var(--accent); }
+
+    .mode .tag {
+      font-family: 'VCR', ui-monospace, monospace;
+      letter-spacing: 0.1em;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .mode p {
+      color: var(--cream-dim);
+      font-size: 15px;
+      margin: 0;
+      max-width: 44ch;
+    }
+
+    /* ─── Values (one line, no dark band) ─── */
+
+    .values {
+      margin-top: 72px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px 28px;
+      font-family: 'VCR', ui-monospace, monospace;
+      letter-spacing: 0.06em;
+      color: var(--cream-dim);
+      font-size: 18px;
+    }
+
+    @media (min-width: 700px) {
+      .values {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .values div {
+      padding: 10px 0;
+      border-bottom: 1px solid oklch(0.40 0.04 55 / 0.35);
+      display: flex;
+      align-items: baseline;
       gap: 10px;
+    }
+    .values div::before {
+      content: "✕";
+      color: var(--accent);
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+    }
+
+    /* ─── Footer ─── */
+
+    footer {
+      margin-top: 72px;
+      padding-top: 22px;
+      border-top: 1px solid oklch(0.40 0.04 55 / 0.35);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 22px;
+      justify-content: space-between;
+      align-items: center;
       font-size: 13px;
       color: var(--muted);
     }
 
-    @media (min-width: 768px) {
-      .features {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      }
+    footer .left {
+      font-family: 'VCR', ui-monospace, monospace;
+      font-size: 15px;
+      letter-spacing: 0.06em;
     }
-
-    .feature-title {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text);
-      margin-bottom: 4px;
+    footer a {
+      color: var(--cream-dim);
+      text-decoration: none;
+      border-bottom: 1px dashed oklch(0.50 0.04 60 / 0.5);
+      padding-bottom: 1px;
     }
-
-    .feature strong {
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    .footer {
-      margin-top: 10px;
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--muted);
-      text-decoration: underline;
-      text-decoration-style: dotted;
-    }
-
-    .footer a:hover {
-      color: var(--accent-soft);
-    }
+    footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="card">
-      <div class="pill">
-        <span class="pill-dot"></span>
-        <span>Mobile puzzle game · Sokoban 1000 Levels</span>
+  <div class="shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <img src="landing-assets/icon.png" alt="" />
+        <span>SOKOBAN 1000</span>
+      </div>
+      <div class="version">v1.2.0</div>
+    </header>
+
+    <section class="hero" aria-label="Introduction">
+      <div>
+        <h1>Push the<br/><em>crate</em>.</h1>
+        <p class="lede">
+          One thousand handcrafted Sokoban levels, ordered from first-push
+          simple to late-game cruel. <b>No energy timers. No paywalls. No
+          daily quests.</b> Just a warehouse, a goal, and a better move than
+          the last one.
+        </p>
+
+        <div class="ctas">
+          <a class="cta" href="https://apps.apple.com/us/app/sokoban-1000-levels-puzzle/id6756060875" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 12.36c-.03-2.82 2.3-4.18 2.41-4.25-1.31-1.92-3.36-2.19-4.09-2.22-1.74-.18-3.4 1.03-4.29 1.03-.9 0-2.25-1.01-3.71-.98-1.9.03-3.67 1.11-4.65 2.82-1.99 3.45-.51 8.54 1.43 11.34.95 1.37 2.07 2.9 3.54 2.85 1.42-.06 1.96-.92 3.68-.92 1.72 0 2.2.92 3.71.89 1.54-.03 2.51-1.39 3.44-2.77 1.1-1.58 1.55-3.12 1.57-3.2-.03-.01-3.01-1.15-3.04-4.59zM14.7 4.12c.77-.94 1.29-2.24 1.15-3.54-1.11.05-2.46.75-3.25 1.68-.71.83-1.33 2.17-1.17 3.43 1.24.1 2.5-.63 3.27-1.57z"/></svg>
+            iOS
+          </a>
+          <a class="cta" href="https://play.google.com/store/apps/details?id=com.dangnhh.sokoban" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 1.8c-.4.4-.6 1-.6 1.8v16.8c0 .8.2 1.4.6 1.8l.1.1 9.4-9.4v-.2L3.2 1.8zM16.4 15.2L13.3 12l3.1-3.2 3.9 2.2c1.1.6 1.1 1.6 0 2.2l-3.9 2z"/></svg>
+            Android
+          </a>
+          <a class="cta ghost" href="https://www.youtube.com/shorts/yzNI81Hv544" target="_blank" rel="noopener noreferrer">
+            Watch a level
+          </a>
+        </div>
       </div>
 
-      <h1>Sokoban 1000 Levels</h1>
-      <p class="subtitle">
-        A focused, handcrafted Sokoban for mobile with
-        <span class="highlight">1000 carefully ordered levels</span>, from gentle intros to
-        brutal late-game challenges. Classic mode lets you clear stage by stage,
-        while Time Challenge throws random puzzles at you with a global leaderboard
-        and a soft background soundtrack. No timers, no pay-to-win, just pure
-        box-pushing strategy.
-      </p>
-
-      <div class="badges">
-        <span class="badge">1000 handcrafted levels</span>
-        <span class="badge">Classic &amp; Time Challenge modes</span>
-        <span class="badge">Global leaderboard</span>
-        <span class="badge">Offline play</span>
-        <span class="badge">No pay-to-win, no energy</span>
-        <span class="badge">Android &amp; iOS</span>
-        <span class="badge">Solo-developed</span>
-      </div>
-
-      <div class="buttons">
-        <a
-          class="btn btn-primary"
-          href="https://play.google.com/store/apps/details?id=com.dangnhh.sokoban"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>Get it on Google Play</span>
-        </a>
-        <a
-          class="btn btn-primary"
-          href="https://apps.apple.com/us/app/sokoban-1000-levels-puzzle/id6756060875"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>Download on the App Store</span>
-        </a>
-        <a
-          class="btn btn-ghost"
-          href="https://www.youtube.com/shorts/yzNI81Hv544"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>Watch gameplay</span>
-        </a>
-      </div>
-
-      <div class="meta">
-        <span><span class="dot"></span> Free to play</span>
-        <span><span class="dot"></span> Optional ads, no paywalls</span>
-        <span><span class="dot"></span> No account required</span>
-        <span><span class="dot"></span> Light on battery &amp; storage</span>
-      </div>
-
-      <div class="features">
-        <div class="feature">
-          <div class="feature-title">Puzzle design</div>
-          <div>
-            <strong>All levels are handcrafted and ordered by difficulty</strong>,
-            so new players can learn step by step. Early stages teach the basics,
-            mid-game mixes in tighter layouts and traps, and late-game levels are
-            designed to punish lazy thinking and reward careful planning.
+      <div class="stage" aria-hidden="true">
+        <div class="board">
+          <div class="board-inner">
+            <!-- Goal stays at col 3, row 2 -->
+            <div class="cell goal" style="--x:3;--y:2">
+              <img src="landing-assets/goal.png" alt="" />
+            </div>
+            <!-- Crate starts at col 1, row 2 -->
+            <div class="cell crate" style="--x:1;--y:2">
+              <img src="landing-assets/crate.png" alt="" />
+            </div>
+            <!-- Player starts at col 0, row 2 -->
+            <div class="cell player" style="--x:0;--y:2">
+              <img src="landing-assets/player.png" alt="" />
+            </div>
+            <!-- Green "crate-on-goal" appears when the pushed crate lands -->
+            <div class="cell crate-final" style="--x:3;--y:2">
+              <img src="landing-assets/crate-done.png" alt="" />
+            </div>
           </div>
         </div>
-        <div class="feature">
-          <div class="feature-title">Game modes</div>
-          <div>
-            <strong>Classic mode</strong> lets you work through all 1000 levels at
-            your own pace, with unlimited undo and restart. In
-            <strong>Time Challenge</strong>, you get a random sequence of puzzles
-            and race to clear as many as you can before you slip up, competing on a
-            <strong>global leaderboard</strong>.
-          </div>
-        </div>
-        <div class="feature">
-          <div class="feature-title">Focused experience</div>
-          <div>
-            <strong>Minimal UI, one-hand controls</strong>, and a calm background
-            track keep all attention on the puzzle itself. No pop-up spam, no
-            forced sign-ins, and no daily grind systems—just a clean Sokoban
-            experience you can pick up and put down anytime.
-          </div>
-        </div>
-        <div class="feature">
-          <div class="feature-title">Built by one person</div>
-          <div>
-            Sokoban 1000 Levels is <strong>solo-developed over months</strong>:
-            every layout, difficulty curve, and update is done by a single dev
-            obsessed with box-pushing puzzles. Future updates will continue to
-            refine level balance, add quality-of-life tweaks, and expand modes
-            without compromising the core design.
-          </div>
-        </div>
+        <p class="stage-caption">Level 001 — <b>solved.</b></p>
       </div>
     </section>
 
-    <p class="footer">
-      © <span id="year"></span> Sokoban 1000 Levels – solo-developed puzzle game.
-      ·
-      <a
-        href="https://dangnhh92.github.io/sokoban-policy/privacy.html"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Privacy Policy
-      </a>
-    </p>
-  </main>
+    <section class="modes" aria-label="Game modes">
+      <div class="mode">
+        <h3>Classic <em>/</em> 1000 levels</h3>
+        <div class="tag">Unlimited undo · Offline · No timer</div>
+        <p>
+          Start at 001, work forward at your pace. Unlimited undo, unlimited
+          restart, progress saved locally without a sign-in. Difficulty is
+          curved on purpose: the last two hundred actually fight back.
+        </p>
+      </div>
+      <div class="mode">
+        <h3>Time Challenge <em>/</em> leaderboard</h3>
+        <div class="tag">60s clock · +5s per solve · Global ranks</div>
+        <p>
+          Random sequence, 60 seconds on the clock, +5 each time you solve one.
+          Streaks rank on a global leaderboard. Optional rewarded-video revive
+          if you want to chase the top.
+        </p>
+      </div>
+    </section>
+
+    <section class="values" aria-label="What this game refuses to do">
+      <div>No energy meters</div>
+      <div>No pay-to-win</div>
+      <div>No forced sign-in</div>
+      <div>No pop-up spam</div>
+      <div>No procedural filler</div>
+      <div>No $1.99 level unlocks</div>
+    </section>
+
+    <footer>
+      <div class="left">© <span id="year"></span> SOKOBAN 1000 — solo dev</div>
+      <nav>
+        <a href="https://dangnhh92.github.io/sokoban-policy/privacy.html" target="_blank" rel="noopener noreferrer">Privacy</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:dangnhh92@gmail.com">Contact</a>
+      </nav>
+    </footer>
+
+  </div>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
