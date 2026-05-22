@@ -12,7 +12,7 @@
   <meta property="og:image" content="landing-assets/icon.webp" />
   <meta property="og:type" content="website" />
 
-  <link rel="icon" type="image/png" href="landing-assets/icon.webp" />
+  <link rel="icon" type="image/webp" href="landing-assets/icon.webp" />
   <link rel="preload" as="image" href="landing-assets/bg.webp" />
   <link rel="preload" as="image" href="landing-assets/crate.webp" />
   <link rel="preload" as="image" href="landing-assets/player.webp" />
@@ -35,12 +35,13 @@
       --accent-soft: oklch(0.82 0.12 65);
       --goal:      oklch(0.62 0.115 232);
 
-      --cell: 44px;
+      /* Hero board cell — sized so the real 13-wide level always fits */
+      --bcell: clamp(20px, calc((100vw - 64px) / 13), 30px);
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     @media (min-width: 900px) {
-      :root { --cell: 52px; }
+      :root { --bcell: 30px; }
     }
 
     * { box-sizing: border-box; }
@@ -199,7 +200,7 @@
       fill: currentColor;
     }
 
-    /* ─── Board (actual in-game tiles) ─── */
+    /* ─── Board (actual in-game tiles, real Level 001) ─── */
 
     .stage {
       justify-self: center;
@@ -208,8 +209,8 @@
 
     .board {
       position: relative;
-      width: calc(var(--cell) * 6);
-      height: calc(var(--cell) * 5);
+      width: calc(var(--bcell) * 13);
+      height: calc(var(--bcell) * 9);
       background: var(--wood-deep);
       border-radius: 14px;
       box-shadow:
@@ -223,17 +224,19 @@
       position: relative;
       width: 100%;
       height: 100%;
-      background: oklch(0.20 0.03 48);
+      /* warm warehouse floor showing under the pieces */
+      background:
+        linear-gradient(180deg, oklch(0.30 0.05 52) 0%, oklch(0.24 0.045 50) 100%);
       border-radius: 6px;
       overflow: hidden;
     }
 
     .cell {
       position: absolute;
-      width: var(--cell);
-      height: var(--cell);
-      left: calc(var(--x) * var(--cell));
-      top:  calc(var(--y) * var(--cell));
+      width: var(--bcell);
+      height: var(--bcell);
+      left: calc(var(--x) * var(--bcell));
+      top:  calc(var(--y) * var(--bcell));
     }
 
     .cell img {
@@ -244,35 +247,13 @@
       image-rendering: crisp-edges;
     }
 
-    .cell.crate { z-index: 2; animation: crate-move 7.5s var(--ease) infinite; }
-    .cell.player { z-index: 3; animation: player-walk 7.5s var(--ease) infinite; }
+    .cell.mover {
+      transition: transform 0.2s var(--ease);
+      will-change: transform;
+    }
+    .cell.player { z-index: 3; }
+    .cell.crate  { z-index: 2; }
     .cell.goal img { animation: goal-pulse 2.6s var(--ease) infinite; }
-
-    /* Player always stays one cell BEHIND the crate while pushing. */
-    @keyframes player-walk {
-      0%, 15%    { transform: translate(0, 0); }
-      32%        { transform: translate(var(--cell), 0); }
-      52%        { transform: translate(calc(var(--cell) * 2), 0); }
-      100%       { transform: translate(calc(var(--cell) * 2), 0); }
-    }
-
-    @keyframes crate-move {
-      0%, 15%    { transform: translate(0, 0); }
-      32%        { transform: translate(var(--cell), 0); }
-      52%        { transform: translate(calc(var(--cell) * 2), 0); opacity: 1; }
-      54%, 100%  { transform: translate(calc(var(--cell) * 2), 0); opacity: 0; }
-    }
-
-    .cell.crate-final {
-      z-index: 2;
-      opacity: 0;
-      animation: crate-final-appear 7.5s var(--ease) infinite;
-    }
-
-    @keyframes crate-final-appear {
-      0%, 53%    { opacity: 0; }
-      54%, 100%  { opacity: 1; }
-    }
 
     @keyframes goal-pulse {
       0%, 100% { transform: scale(1); opacity: 0.9; }
@@ -293,13 +274,67 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .cell.crate, .cell.player, .cell.crate-final, .cell.goal img {
-        animation: none;
-      }
-      .cell.player { transform: translate(calc(var(--cell) * 2), 0); }
-      .cell.crate { opacity: 0; }
-      .cell.crate-final { opacity: 1; }
+      .cell.mover { transition: none; }
+      .cell.goal img { animation: none; }
     }
+
+    /* ─── Screenshots gallery (swipe carousel) ─── */
+
+    .gallery { margin-top: 96px; }
+
+    .gallery-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .gallery-head h2 {
+      font-family: 'VCR', ui-monospace, monospace;
+      font-weight: 400;
+      font-size: clamp(26px, 5vw, 38px);
+      letter-spacing: 0.03em;
+      margin: 0;
+      color: var(--cream);
+    }
+    .gallery-head h2 em { font-style: normal; color: var(--accent); }
+    .gallery-head .hint {
+      font-family: 'VCR', ui-monospace, monospace;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .rail {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 4px 4px 18px;
+      margin: 0 -4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: oklch(0.45 0.05 55 / 0.5) transparent;
+    }
+    .rail::-webkit-scrollbar { height: 6px; }
+    .rail::-webkit-scrollbar-thumb {
+      background: oklch(0.45 0.05 55 / 0.5);
+      border-radius: 3px;
+    }
+    .rail::-webkit-scrollbar-track { background: transparent; }
+
+    .shot {
+      flex: 0 0 auto;
+      scroll-snap-align: center;
+      width: clamp(178px, 56vw, 224px);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow:
+        0 18px 38px -20px oklch(0.05 0.02 50 / 0.85),
+        0 0 0 1px oklch(0.45 0.04 60 / 0.25) inset;
+    }
+    .shot img { width: 100%; height: auto; display: block; }
 
     /* ─── Modes ─── */
 
@@ -414,10 +449,10 @@
 
     <header class="topbar">
       <div class="brand">
-        <img src="landing-assets/icon.webp" alt="" />
+        <img src="landing-assets/icon.webp" alt="" width="36" height="36" />
         <span>SOKOBAN 1000</span>
       </div>
-      <div class="version">v1.2.0</div>
+      <div class="version">v1.2.3</div>
     </header>
 
     <section class="hero" aria-label="Introduction">
@@ -433,40 +468,39 @@
         <div class="ctas">
           <a class="cta" href="https://apps.apple.com/us/app/sokoban-1000-levels-puzzle/id6756060875" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.05 12.36c-.03-2.82 2.3-4.18 2.41-4.25-1.31-1.92-3.36-2.19-4.09-2.22-1.74-.18-3.4 1.03-4.29 1.03-.9 0-2.25-1.01-3.71-.98-1.9.03-3.67 1.11-4.65 2.82-1.99 3.45-.51 8.54 1.43 11.34.95 1.37 2.07 2.9 3.54 2.85 1.42-.06 1.96-.92 3.68-.92 1.72 0 2.2.92 3.71.89 1.54-.03 2.51-1.39 3.44-2.77 1.1-1.58 1.55-3.12 1.57-3.2-.03-.01-3.01-1.15-3.04-4.59zM14.7 4.12c.77-.94 1.29-2.24 1.15-3.54-1.11.05-2.46.75-3.25 1.68-.71.83-1.33 2.17-1.17 3.43 1.24.1 2.5-.63 3.27-1.57z"/></svg>
-            iOS
+            App Store
           </a>
           <a class="cta" href="https://play.google.com/store/apps/details?id=com.dangnhh.sokoban" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 1.8c-.4.4-.6 1-.6 1.8v16.8c0 .8.2 1.4.6 1.8l.1.1 9.4-9.4v-.2L3.2 1.8zM16.4 15.2L13.3 12l3.1-3.2 3.9 2.2c1.1.6 1.1 1.6 0 2.2l-3.9 2z"/></svg>
-            Android
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.2a1 1 0 0 0-.5.88v17.84a1 1 0 0 0 .5.88l9.3-9.8L3.6 2.2zm10.7 8.36 2.55-2.68-9.2-5.22c-.32-.18-.63-.2-.9-.1l7.55 8zm0 2.88-7.55 8c.27.1.58.08.9-.1l9.2-5.22-2.55-2.68zm5.02-3.2-2.16-1.23-2.78 2.79 2.78 2.79 2.16-1.23c.86-.49.86-1.4 0-1.89z"/></svg>
+            Google Play
           </a>
-          <a class="cta ghost" href="https://www.youtube.com/shorts/yzNI81Hv544" target="_blank" rel="noopener noreferrer">
+          <a class="cta ghost" href="https://youtube.com/shorts/vj9ao6AGv_8?feature=share" target="_blank" rel="noopener noreferrer">
             Watch a level
           </a>
         </div>
       </div>
 
-      <div class="stage" aria-hidden="true">
+      <div class="stage">
         <div class="board">
-          <div class="board-inner">
-            <!-- Goal stays at col 3, row 2 -->
-            <div class="cell goal" style="--x:3;--y:2">
-              <img src="landing-assets/goal.webp" alt="" />
-            </div>
-            <!-- Crate starts at col 1, row 2 -->
-            <div class="cell crate" style="--x:1;--y:2">
-              <img src="landing-assets/crate.webp" alt="" />
-            </div>
-            <!-- Player starts at col 0, row 2 -->
-            <div class="cell player" style="--x:0;--y:2">
-              <img src="landing-assets/player.webp" alt="" />
-            </div>
-            <!-- Green "crate-on-goal" appears when the pushed crate lands -->
-            <div class="cell crate-final" style="--x:3;--y:2">
-              <img src="landing-assets/crate-done.webp" alt="" />
-            </div>
-          </div>
+          <div class="board-inner" id="board" role="img" aria-label="A real Level 001 being solved"></div>
         </div>
-        <p class="stage-caption">Level 001 — <b>solved.</b></p>
+        <p class="stage-caption">Level 001 — watch it <b>solve.</b></p>
+      </div>
+    </section>
+
+    <section class="gallery" aria-label="Screenshots">
+      <div class="gallery-head">
+        <h2>Inside the <em>warehouse</em></h2>
+        <span class="hint">swipe →</span>
+      </div>
+      <div class="rail" tabindex="0" aria-label="App screenshots, scroll horizontally">
+        <div class="shot"><img src="landing-assets/shots/shot-1.webp" width="560" height="1212" loading="lazy" decoding="async" alt="Main menu" /></div>
+        <div class="shot"><img src="landing-assets/shots/shot-2.webp" width="560" height="1212" loading="lazy" decoding="async" alt="1000 levels picker" /></div>
+        <div class="shot"><img src="landing-assets/shots/shot-3.webp" width="560" height="1212" loading="lazy" decoding="async" alt="An early level" /></div>
+        <div class="shot"><img src="landing-assets/shots/shot-4.webp" width="560" height="1212" loading="lazy" decoding="async" alt="A harder level" /></div>
+        <div class="shot"><img src="landing-assets/shots/shot-5.webp" width="560" height="1212" loading="lazy" decoding="async" alt="Time Challenge mode" /></div>
+        <div class="shot"><img src="landing-assets/shots/shot-6.webp" width="560" height="1212" loading="lazy" decoding="async" alt="Settings" /></div>
+        <div class="shot"><img src="landing-assets/shots/shot-7.webp" width="560" height="1212" loading="lazy" decoding="async" alt="Global leaderboard" /></div>
       </div>
     </section>
 
@@ -482,11 +516,11 @@
       </div>
       <div class="mode">
         <h3>Time Challenge <em>/</em> leaderboard</h3>
-        <div class="tag">60s clock · +5s per solve · Global ranks</div>
+        <div class="tag">5:00 clock · +20s per solve · Global ranks</div>
         <p>
-          Random sequence, 60 seconds on the clock, +5 each time you solve one.
-          Streaks rank on a global leaderboard. Optional rewarded-video revive
-          if you want to chase the top.
+          Random sequence, five minutes on the clock, +20 seconds each time you
+          solve one. Streaks rank on a global leaderboard. Optional rewarded-video
+          revive if you want to chase the top.
         </p>
       </div>
     </section>
@@ -497,7 +531,7 @@
       <div>No forced sign-in</div>
       <div>No pop-up spam</div>
       <div>No procedural filler</div>
-      <div>No $1.99 level unlocks</div>
+      <div>No level paywalls</div>
     </section>
 
     <footer>
@@ -513,6 +547,102 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ── Real Level 001: build board + loop the actual solution ── */
+    (function () {
+      const LV = {"W":13,"H":9,
+        "walls":[[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12],[1,0],[1,11],[1,12],[2,0],[2,1],[2,2],[2,3],[2,4],[2,6],[2,7],[2,8],[2,11],[2,12],[3,0],[3,1],[3,2],[3,3],[3,4],[3,12],[4,0],[4,1],[4,2],[4,3],[4,4],[4,12],[5,0],[5,1],[5,2],[5,3],[5,4],[5,5],[5,6],[5,12],[6,0],[6,1],[6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],[6,10],[6,11],[6,12],[7,0],[7,1],[7,2],[7,3],[7,4],[7,5],[7,6],[7,7],[7,8],[7,10],[7,11],[7,12],[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,6],[8,7],[8,8],[8,9],[8,10],[8,11],[8,12]],
+        "targets":[[3,11],[4,5],[4,6]],
+        "boxes":[[2,5],[3,6],[4,9]],
+        "player":[5,11],
+        "moves":"ULLLLURRUULLLLDDRRRRR"};
+      const A = 'landing-assets/';
+      const board = document.getElementById('board');
+      if (!board) return;
+
+      const cell = (x, y, cls, src) => {
+        const d = document.createElement('div');
+        d.className = 'cell ' + cls;
+        d.style.setProperty('--x', x);
+        d.style.setProperty('--y', y);
+        if (src) {
+          const im = document.createElement('img');
+          im.src = A + src; im.alt = ''; im.draggable = false;
+          d.appendChild(im);
+        }
+        board.appendChild(d);
+        return d;
+      };
+
+      // static layer: walls + targets (floor stays transparent → wood shows)
+      for (const [r, c] of LV.walls) cell(c, r, 'wall', 'wall.webp');
+      for (const [r, c] of LV.targets) cell(c, r, 'goal', 'goal.webp');
+
+      const isTarget = (x, y) => LV.targets.some(t => t[1] === x && t[0] === y);
+      const DIRS = { U: [0, -1], D: [0, 1], L: [-1, 0], R: [1, 0] };
+
+      // movers
+      const boxes = LV.boxes.map(([r, c]) => ({
+        sx: c, sy: r, x: c, y: r,
+        el: cell(c, r, 'crate mover', 'crate.webp'), done: false,
+      }));
+      const pl = LV.player; // [r,c]
+      const player = { sx: pl[1], sy: pl[0], x: pl[1], y: pl[0], face: 1,
+        el: cell(pl[1], pl[0], 'player mover', 'player.webp') };
+
+      const px = () => board.clientWidth / LV.W; // current cell px (responsive)
+      function paint(o) {
+        const u = px();
+        const t = `translate(${(o.x - o.sx) * u}px, ${(o.y - o.sy) * u}px)`;
+        o.el.style.transform = o === player ? `${t} scaleX(${o.face})` : t;
+      }
+      function setDone(b) {
+        if (b.done === b.onT) return;
+        b.done = b.onT;
+        b.el.querySelector('img').src = A + (b.onT ? 'crate-done.webp' : 'crate.webp');
+      }
+      function reset() {
+        for (const b of boxes) { b.x = b.sx; b.y = b.sy; b.onT = false; setDone(b); paint(b); }
+        player.x = player.sx; player.y = player.sy; player.face = 1; paint(player);
+      }
+      function refreshDone() { for (const b of boxes) { b.onT = isTarget(b.x, b.y); setDone(b); } }
+
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) {
+        // jump straight to the solved state
+        const m = LV.moves.split('');
+        for (const k of m) {
+          const [dx, dy] = DIRS[k];
+          const nx = player.x + dx, ny = player.y + dy;
+          const b = boxes.find(o => o.x === nx && o.y === ny);
+          if (b) { b.x += dx; b.y += dy; }
+          player.x = nx; player.y = ny;
+        }
+        for (const b of boxes) paint(b);
+        refreshDone(); paint(player);
+        return;
+      }
+
+      let i = 0;
+      const moves = LV.moves.split('');
+      function step() {
+        if (i >= moves.length) { i = 0; setTimeout(() => { reset(); setTimeout(loop, 700); }, 1100); return; }
+        const k = moves[i++];
+        const [dx, dy] = DIRS[k];
+        if (dx) player.face = dx > 0 ? 1 : -1;
+        const nx = player.x + dx, ny = player.y + dy;
+        const b = boxes.find(o => o.x === nx && o.y === ny);
+        if (b) { b.x += dx; b.y += dy; b.onT = isTarget(b.x, b.y); setDone(b); paint(b); }
+        player.x = nx; player.y = ny; paint(player);
+        setTimeout(step, 230);
+      }
+      let timer;
+      function loop() { i = 0; step(); }
+      // start once images are likely decoded
+      setTimeout(loop, 400);
+      // keep transforms correct on resize (cell px changes)
+      addEventListener('resize', () => { for (const b of boxes) paint(b); paint(player); }, { passive: true });
+    })();
   </script>
 </body>
 </html>
